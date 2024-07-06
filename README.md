@@ -45,3 +45,7 @@ If you've found a bug or have a cool idea for improvement, feel free to open an 
 ## 🎉 Enjoy the game!
 
 Remember, the key to winning is strategy, patience, and a bit of luck. Happy gaming! 🍀🏆
+
+## License
+
+[![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
