@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link type="text/css" href="./style.css" rel="stylesheet" >
+    
+</head>
+<body>
+    <div class="mouse-follower"></div>
+    <div class="container">
+        <h1>2048 - By Nathan</h1>
+        <div>
+            <span class="floating-tile">2</span>
+            <span class="floating-tile" style="animation-delay: 0.5s;">4</span>
+            <span class="floating-tile" style="animation-delay: 1s;">8</span>
+            <span class="floating-tile" style="animation-delay: 1.5s;">16</span>
+        </div>
+        <p> Merge Madness the 2048 Experience!</p>
+        <button class="play-button" onclick="window.location.href='game.html'">Play Game</button>
+    </div>
+    <div class="wave">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="#ff5500" fill-opacity="1" d="M0,224L40,213.3C80,203,160,181,240,149.3C320,117,400,75,480,90.7C560,107,640,181,720,192C800,203,880,149,960,149.3C1040,149,1120,203,1200,
+            218.7C1280,235,1360,213,1400,202.7L1440,192L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z" 
+            class="shape-fill">
+            </path>
+        </svg>
+    </div>
+    <script type="text/javascript">
+        const cursor = document.querySelector(".mouse-follower");
+        var timeout;
+
+            //follow cursor on mouse move
+            document.addEventListener("mousemove", (e) => {
+                let x = e.pageX;
+                let y = e.pageY;
+
+                cursor.style.top = y + "px";
+                cursor.style.left = x + "px";
+                cursor.style.display = "block";
+
+                function mouseStopped(){
+                    cursor.style.display = "none";
+                }
+                clearTimeout(timeout);
+                timeout = setTimeout(mouseStopped, 1000);
+            });
+        //cursor effect on mouseout
+        document.addEventListener("mouseout", ()=>{
+            cursor.style.display = "none";
+    })
+    </script>
+</body>
+</html>

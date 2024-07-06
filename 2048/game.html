@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link type="text/css" href="./game.css" rel="stylesheet" >
+    
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-board">
+            <div class="score">Score: <span id="current-score">0</span></div>
+            <div class="score">High Score: <span id="high-score">0</span></div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <div class="controls">
+            <button onclick="restartGame()">Restart</button>
+            <button onclick="window.location.href='index.html'">Quit</button>
+        </div>
+    </div>
+    <script>
+        const gridSize = 5;
+        let grid = [];
+        let score = 0;
+        let highScore = 0;
+
+        function initializeGrid() {
+            grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            addNewTile();
+            addNewTile();
+            updateGrid();
+        }
+
+        function addNewTile() {
+            let emptyCells = [];
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    if (grid[i][j] === 0) {
+                        emptyCells.push({i, j});
+                    }
+                }
+            }
+            if (emptyCells.length > 0) {
+                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                grid[randomCell.i][randomCell.j] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        function updateGrid() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = grid[i][j] || '';
+                    cell.style.backgroundColor = getCellColor(grid[i][j]);
+                    gridElement.appendChild(cell);
+                }
+            }
+            document.getElementById('current-score').textContent = score;
+            document.getElementById('high-score').textContent = highScore;
+        }
+
+        function getCellColor(value) {
+            const colors = {
+                0: '#FFE6CC',
+                2: '#FFD700',
+                4: '#FFA500',
+                8: '#FF8C00',
+                16: '#FF6347',
+                32: '#FF4500',
+                64: '#FF0000',
+                128: '#DC143C',
+                256: '#B22222',
+                512: '#8B0000',
+                1024: '#800000',
+                2048: '#4B0082'
+            };
+            return colors[value] || '#4B0082';
+        }
+
+        function move(direction) {
+            let moved = false;
+            let newGrid = JSON.parse(JSON.stringify(grid));
+
+            function pushNumbers(arr) {
+                let newArr = arr.filter(val => val !== 0);
+                for (let i = 0; i < newArr.length - 1; i++) {
+                    if (newArr[i] === newArr[i+1]) {
+                        newArr[i] *= 2;
+                        score += newArr[i];
+                        newArr.splice(i+1, 1);
+                    }
+                }
+                while (newArr.length < gridSize) {
+                    newArr.push(0);
+                }
+                return newArr;
+            }
+
+            if (direction === 'left' || direction === 'right') {
+                for (let i = 0; i < gridSize; i++) {
+                    let row = newGrid[i];
+                    row = direction === 'left' ? pushNumbers(row) : pushNumbers(row.reverse()).reverse();
+                    if (JSON.stringify(row) !== JSON.stringify(newGrid[i])) {
+                        moved = true;
+                    }
+                    newGrid[i] = row;
+                }
+            } else {
+                for (let j = 0; j < gridSize; j++) {
+                    let column = newGrid.map(row => row[j]);
+                    column = direction === 'up' ? pushNumbers(column) : pushNumbers(column.reverse()).reverse();
+                    if (JSON.stringify(column) !== JSON.stringify(newGrid.map(row => row[j]))) {
+                        moved = true;
+                    }
+                    for (let i = 0; i < gridSize; i++) {
+                        newGrid[i][j] = column[i];
+                    }
+                }
+            }
+
+            if (moved) {
+                grid = newGrid;
+                addNewTile();
+                updateGrid();
+                if (score > highScore) {
+                    highScore = score;
+                }
+                if (!canMove()) {
+                    alert('Game Over! No more moves possible.');
+                }
+            }
+        }
+
+        function canMove() {
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    if (grid[i][j] === 0) {
+                        return true;
+                    }
+                    if (i < gridSize - 1 && grid[i][j] === grid[i+1][j]) {
+                        return true;
+                    }
+                    if (j < gridSize - 1 && grid[i][j] === grid[i][j+1]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function restartGame() {
+            score = 0;
+            initializeGrid();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                move('left');
+            } else if (event.key === 'ArrowRight') {
+                move('right');
+            } else if (event.key === 'ArrowUp') {
+                move('up');
+            } else if (event.key === 'ArrowDown') {
+                move('down');
+            }
+        });
+
+        initializeGrid();
+    </script>
+</body>
+</html>
